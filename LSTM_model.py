@@ -27,16 +27,16 @@ print('\n', exp_prefix)
 
 # create working directories with exp_predix but pass if folder existes
 try:
-    os.mkdir(f'./modeles/{exp_prefix}')
+    os.mkdir(f'./models/{exp_prefix}')
 except FileExistsError:
     pass
 
 # load observation dataset
-events = pd.read_csv('./donnees/dardennes_pluvio_limni_2012_2018_15min_interpolate_mean_cumsum_etp_events_fill_stantoine_rapid_events_models_predict_at_k_ok.csv', index_col=0)
+events = pd.read_csv('./data/dardennes_pluvio_limni_2012_2018_15min_interpolate_mean_cumsum_etp_events_fill_stantoine_rapid_events_models_predict_at_k.csv', index_col=0)
 events.index = pd.to_datetime(events.index)
 
 # load event dates
-with open('./donnees/2_2_d_events_modif.json', 'r') as f:
+with open('./data/d_events.json', 'r') as f:
     d_events = json.load(f)
 
 # convert dates to timestamp and keys to int in dictionary
@@ -224,7 +224,7 @@ for opt in list_optimizer:
         list_w, list_num_layers, list_seq_length = lm_list_w, lm_num_layers, lm_seq_length
         d_w_static, variables, limni_lag, limni_step = lm_d_w_static, lm_variables, lm_limni_lag, lm_limni_step
         
-    # Create Cartesian product of all iterables
+    # create Cartesian product of all iterables
     all_combinations = product(list_prevision_horizon, range(0, n_i_s), list_hidden_size, list_num_layers, list_seq_length, variables, list_w[0], cross_val_list)
     
     for combination in all_combinations:
@@ -508,11 +508,11 @@ if list_optimizer in [['AD'], ['LM']]:
 d_information = {str(k): str(v) for k, v in d_information.items()}
 
 # save experience information
-with open(f'./modeles/{exp_prefix}/d_information.json', 'w') as f:
+with open(f'./models/{exp_prefix}/d_information.json', 'w') as f:
     json.dump(d_information, f)
 
 # to save useful information
-path_exp_table = f'./modeles/{exp_prefix}/exp_table.csv'
+path_exp_table = f'./models/{exp_prefix}/exp_table.csv'
 with open(path_exp_table, mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow([

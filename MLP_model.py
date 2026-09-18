@@ -24,16 +24,16 @@ print('\n', exp_prefix)
 
 # create working directories with exp_predix but pass if folder existes
 try:
-    os.mkdir(f'./modeles/{exp_prefix}')
+    os.mkdir(f'./models/{exp_prefix}')
 except FileExistsError:
     pass
 
 # load observation dataset
-events = pd.read_csv('./donnees/traitees/hydro-meteo/dardennes_pluvio_limni_2012_2018_15min_interpolate_mean_cumsum_etp_events_fill_stantoine_rapid_events_models_predict_at_k_ok.csv', index_col=0)
+events = pd.read_csv('./data/dardennes_pluvio_limni_2012_2018_15min_interpolate_mean_cumsum_etp_events_fill_stantoine_rapid_events_models_predict_at_k.csv', index_col=0)
 events.index = pd.to_datetime(events.index)
 
 # load event dates
-with open('./donnees/traitees/results/2_2_d_events_modif.json', 'r') as f:
+with open('./data/d_events.json', 'r') as f:
     d_events = json.load(f)
 
 # convert dates to timestamp and keys to int in dictionary
@@ -174,6 +174,7 @@ class CustomModel(nn.Module):
 hyperparameters = []
 # get cross validation events
 cross_val_list = [x for x in event_numbers if x not in testing_list + early_stop]
+
 for opt in list_optimizer:
     # set range of hidden layers and number of max epochs
     if opt == 'AD': # Adam
@@ -184,6 +185,7 @@ for opt in list_optimizer:
         list_num_hidden, max_epoch, learning_rate = lm_num_hidden, lm_max_epoch, lm_learning_rate
         list_w, list_act_func1, list_slope1, list_act_func2, list_slope2 = lm_list_w, lm_act_func1, lm_slope1, lm_act_func2, lm_slope2
         d_w_static, variables, limni_lag, limni_step = lm_d_w_static, lm_variables, lm_limni_lag, lm_limni_step
+
     for pr_h in list_prevision_horizon:
         for i_s in range(0, n_i_s):
             for num_hidden in list_num_hidden:
@@ -455,11 +457,11 @@ if list_optimizer in [['AD'], ['LM']]:
 d_information = {str(k): str(v) for k, v in d_information.items()}
 
 # save experience information
-with open(f'./modeles/{exp_prefix}/d_information.json', 'w') as f:
+with open(f'./models/{exp_prefix}/d_information.json', 'w') as f:
     json.dump(d_information, f)
 
 # to save useful information
-path_exp_table = f'./modeles/{exp_prefix}/exp_table.csv'
+path_exp_table = f'./models/{exp_prefix}/exp_table.csv'
 with open(path_exp_table, mode='w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow([
